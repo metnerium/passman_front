@@ -10,7 +10,7 @@ const routes = [
     component: LoginPage
   },
   {
-    path: '/',
+    path: '/passwords',
     name: 'Passwords',
     component: PasswordsPage
   },
