@@ -61,13 +61,11 @@ export default {
     },
     async register() {
       try {
-        const response = await axios.post('/api/register', {
+        await axios.post('/api/register', {
           username: this.username,
           password: this.password,
         })
-        this.$store.commit('setAuthenticated', true)
-        this.$store.commit('setToken', response.data.access_token)
-        this.$router.push('/passwords')
+        alert('Успешно! Теперь авторизуйтесь')
       } catch (error) {
         console.error(error)
         alert('Неверное имя пользователя или пароль')
