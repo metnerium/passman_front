@@ -10,10 +10,20 @@ import 'vuetify/styles'
 
 // Composables
 import { createVuetify } from 'vuetify'
+import * as colors from "vuetify/util/colors";
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   theme: {
-    dark: true,
+    defaultTheme: 'dark',
+    themes: {
+      dark: {
+        light: false,
+        colors: {
+          primary: colors.grey.darken4,
+          secondary: colors.shades.black,
+        }
+      },
+    },
   },
 })

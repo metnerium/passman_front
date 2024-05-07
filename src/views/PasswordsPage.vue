@@ -1,91 +1,108 @@
 <template>
-  <v-container fluid>
-    <v-row>
-      <v-col>
-        <v-card>
-          <v-card-title>
-            Passwords
-            <v-spacer />
-            <v-btn color="primary" @click="addPassword">Add Password</v-btn>
-          </v-card-title>
-          <v-data-table
-            :headers="headers"
-            :items="passwords"
-            :items-per-page="5"
-          >
-            <!-- eslint-disable-next-line vue/valid-v-slot -->
-            <template #item.actions="{ item }">
-              <v-icon small class="mr-2" @click="editPassword(item)">
-                mdi-pencil
-              </v-icon>
-              <v-icon small @click="deletePassword(item)"> mdi-delete </v-icon>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
+  <v-app dark>
+    <v-container fluid>
+      <v-row>
+        <v-col>
+          <v-card color="grey darken-4" elevation="10">
+            <v-card-title class="white--text">
+              <span class="headline">Passwords</span>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" @click="addPassword">
+                <v-icon left>mdi-plus</v-icon>
+                Add Password
+              </v-btn>
+            </v-card-title>
+            <v-list>
+              <v-list-item
+                v-for="(item, index) in passwords"
+                :key="index"
+                :class="{ 'mb-2': index !== passwords.length - 1 }"
+              >
+                <v-list-item-content>
+                  <v-list-item-title class="white--text">{{ item.site }}</v-list-item-title>
+                  <v-list-item-subtitle class="white--text">{{ item.login }}</v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-btn icon @click="editPassword(item)">
+                    <v-icon color="primary">mdi-pencil</v-icon>
+                  </v-btn>
+                  <v-btn icon @click="deletePassword(item)">
+                    <v-icon color="error">mdi-delete</v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-col>
+      </v-row>
 
-    <v-dialog v-model="dialog" max-width="500px">
-      <v-card>
-        <v-card-title>
-          <span class="headline">{{ formTitle }}</span>
-        </v-card-title>
-        <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="editedItem.website"
-                  label="Website"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="editedItem.login"
-                  label="Login"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="editedItem.password"
-                  label="Password"
-                  type="password"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-container>
+      <v-dialog v-model="dialog" max-width="500px">
+        <v-card color="grey darken-4" elevation="10">
+          <v-card-title class="white--text">
+            <span class="headline">{{ formTitle }}</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="editedItem.site"
+                    label="Site"
+                    outlined
+                    dense
+                    color="white"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="editedItem.login"
+                    label="Login"
+                    outlined
+                    dense
+                    color="white"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="editedItem.password"
+                    label="Password"
+                    outlined
+                    dense
+                    color="white"
+                    type="password"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="error" text @click="close">Cancel</v-btn>
+            <v-btn color="primary" text @click="save">Save</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
 import axios from 'axios'
+import store from '@/store'
 
 export default {
   name: 'PasswordsPage',
   data: () => ({
-    headers: [
-      {text: 'Website', value: 'website'},
-      {text: 'Login', value: 'login'},
-      {text: 'Actions', value: 'actions', sortable: false},
-    ],
     passwords: [],
     dialog: false,
     editedIndex: -1,
     editedItem: {
-      website: '',
+      site: '',
       login: '',
       password: '',
     },
     defaultItem: {
-      website: '',
+      site: '',
       login: '',
       password: '',
     },
@@ -106,7 +123,11 @@ export default {
   methods: {
     async fetchPasswords() {
       try {
-        const response = await axios.get('/passwords')
+        const response = await axios.get('/api/passwords', {
+          headers: {
+            Authorization: `Bearer ${store.state.token}`,
+          },
+        })
         this.passwords = response.data
       } catch (error) {
         console.error(error)
@@ -125,7 +146,11 @@ export default {
     },
     async deletePassword(item) {
       try {
-        await axios.delete(`/passwords/${item.id}`)
+        await axios.delete(`/api/passwords/${item.id}`, {
+          headers: {
+            Authorization: `Bearer ${store.state.token}`,
+          },
+        })
         this.passwords = this.passwords.filter((password) => password.id !== item.id)
       } catch (error) {
         console.error(error)
@@ -135,11 +160,19 @@ export default {
     async save() {
       if (this.editedIndex > -1) {
         try {
-          await axios.put(`/passwords/${this.passwords[this.editedIndex].id}`, {
-            website: this.editedItem.website,
-            login: this.editedItem.login,
-            password: this.editedItem.password,
-          })
+          await axios.put(
+            `/api/passwords/${this.passwords[this.editedIndex].id}`,
+            {
+              site: this.editedItem.site,
+              login: this.editedItem.login,
+              password: this.editedItem.password,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${store.state.token}`,
+              },
+            }
+          )
           Object.assign(this.passwords[this.editedIndex], this.editedItem)
         } catch (error) {
           console.error(error)
@@ -147,11 +180,19 @@ export default {
         }
       } else {
         try {
-          const response = await axios.post('/passwords', {
-            website: this.editedItem.website,
-            login: this.editedItem.login,
-            password: this.editedItem.password,
-          })
+          const response = await axios.post(
+            '/api/passwords',
+            {
+              site: this.editedItem.site,
+              login: this.editedItem.login,
+              password: this.editedItem.password,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${store.state.token}`,
+              },
+            }
+          )
           this.passwords.push(response.data)
         } catch (error) {
           console.error(error)
@@ -159,6 +200,13 @@ export default {
         }
       }
       this.close()
+    },
+    close() {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
     },
   }
 }

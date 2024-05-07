@@ -2,15 +2,16 @@ import { createStore } from 'vuex'
 
 const store = createStore({
   state: {
+    token: '', // Здесь должен храниться JWT токен
     authenticated: false,
   },
   mutations: {
     setAuthenticated(state, value) {
       state.authenticated = value
     },
-  },
-  getters: {
-    isAuthenticated: (state) => state.authenticated,
+    setToken(state, token) {
+      state.token = token
+    },
   },
 })
 
