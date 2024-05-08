@@ -5,11 +5,11 @@
         <v-col>
           <v-card color="grey darken-4" elevation="10">
             <v-card-title class="white--text">
-              <span class="headline">Passwords</span>
+              <span class="headline">Пароли</span>
               <v-spacer></v-spacer>
               <v-btn color="primary" @click="addPassword">
                 <v-icon left>mdi-plus</v-icon>
-                Add Password
+                Добавить пароль
               </v-btn>
             </v-card-title>
             <v-list>
@@ -19,15 +19,18 @@
                 :class="{ 'mb-2': index !== passwords.length - 1 }"
               >
                 <v-list-item-content>
-                  <v-list-item-title class="white--text">{{ item.site }}</v-list-item-title>
-                  <v-list-item-subtitle class="white--text">{{ item.login }}</v-list-item-subtitle>
+                  <v-list-item-title class="white--text d-flex">
+                    <span class="mr-2">{{ item.site }}</span>
+                    <span class="mr-2">{{ item.login }}</span>
+                    <span>{{ maskPassword(item.password) }}</span>
+                  </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-btn icon @click="editPassword(item)">
-                    <v-icon color="primary">mdi-pencil</v-icon>
+                  <v-btn variant="outlined" @click="editPassword(item)">
+                    Редактировать
                   </v-btn>
-                  <v-btn icon @click="deletePassword(item)">
-                    <v-icon color="error">mdi-delete</v-icon>
+                  <v-btn variant="outlined" @click="deletePassword(item)">
+                    Удалить
                   </v-btn>
                 </v-list-item-action>
               </v-list-item>
@@ -69,7 +72,9 @@
                     outlined
                     dense
                     color="white"
-                    type="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                    @click:append="showPassword = !showPassword"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -77,8 +82,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="error" text @click="close">Cancel</v-btn>
-            <v-btn color="primary" text @click="save">Save</v-btn>
+            <v-btn color="error" text @click="close">Отмена</v-btn>
+            <v-btn color="primary" text @click="save">Сохранить</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -106,6 +111,7 @@ export default {
       login: '',
       password: '',
     },
+    showPassword: false,
   }),
   computed: {
     formTitle() {
@@ -121,6 +127,9 @@ export default {
     this.fetchPasswords()
   },
   methods: {
+    maskPassword(password) {
+      return password.replace(/./g, '*')
+    },
     async fetchPasswords() {
       try {
         const response = await axios.get('/api/passwords', {
@@ -206,6 +215,7 @@ export default {
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
+        this.showPassword = false
       })
     },
   }
