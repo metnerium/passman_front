@@ -4,16 +4,15 @@
       <v-row>
         <v-col>
           <v-card color="grey darken-4" elevation="10">
-            <v-card-title class="white--text">
+            <v-card-title class="white--text d-flex justify-space-between">
               <span class="headline">Пароли</span>
-              <v-spacer></v-spacer>
               <v-btn color="primary" @click="addPassword">
                 <v-icon left>mdi-plus</v-icon>
                 Добавить пароль
               </v-btn>
-              <v-spacer></v-spacer>
-              <v-btn color="primary" @click="this.showPassword = true">
-                Показать пароли
+              <v-btn color="primary" @click="showPassword = !showPassword">
+                <span v-if="showPassword">Скрыть пароли</span>
+                <span v-else>Показать пароли</span>
               </v-btn>
             </v-card-title>
             <v-list>
@@ -26,7 +25,7 @@
                   <v-list-item-title class="white--text d-flex">
                     <span class="mr-2">{{ item.site }}</span>
                     <span class="mr-2">{{ item.login }}</span>
-                    <span>{{ maskPassword(item.password) }}</span>
+                    <span>{{ showPassword ? item.password : maskPassword(item.password) }}</span>
                   </v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
