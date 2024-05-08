@@ -11,6 +11,10 @@
                 <v-icon left>mdi-plus</v-icon>
                 Добавить пароль
               </v-btn>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" @click="this.showPassword = true">
+                Показать пароли
+              </v-btn>
             </v-card-title>
             <v-list>
               <v-list-item
