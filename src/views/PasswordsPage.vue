@@ -4,16 +4,18 @@
       <v-row>
         <v-col>
           <v-card color="grey darken-4" elevation="10">
-            <v-card-title class="white--text d-flex justify-space-between">
+            <v-card-title class="white--text d-flex">
               <span class="headline">Пароли</span>
-              <v-btn color="primary" @click="addPassword">
-                <v-icon left>mdi-plus</v-icon>
-                Добавить пароль
-              </v-btn>
-              <v-btn color="primary" @click="showPassword = !showPassword">
-                <span v-if="showPassword">Скрыть пароли</span>
-                <span v-else>Показать пароли</span>
-              </v-btn>
+              <v-row>
+                <v-btn color="primary" @click="addPassword" class="mr-3">
+                  <v-icon left>mdi-plus</v-icon>
+                  Добавить пароль
+                </v-btn>
+                <v-btn color="primary" @click="showPassword = !showPassword">
+                  <span v-if="showPassword">Скрыть пароли</span>
+                  <span v-else>Показать пароли</span>
+                </v-btn>
+              </v-row>
             </v-card-title>
             <v-list>
               <v-list-item
